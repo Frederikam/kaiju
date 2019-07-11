@@ -1,10 +1,18 @@
-project('kaiju', 'c', 'cpp', version: '0.0.1', default_options: ['c_std=c11', 'cpp_std=c++14'])
+project('kaiju', 
+    'cpp', 
+    version: '0.0.1', 
+    default_options: ['cpp_std=c++14']
+)
 
-add_project_arguments(['-DWLR_USE_UNSTABLE', '-std=c11'], language: 'cpp')
+add_project_arguments(['-DWLR_USE_UNSTABLE'], language: 'cpp')
 
 deps = [
     dependency('gtk+-3.0'),
     dependency('wlroots'),
 ]
 
-executable('kaiju', 'main.cpp', dependencies: deps)
+# Meson does not allow wildcard searched for sources. We use a shell script for that
+c = run_command('find_sources.sh')
+sources = c.stdout().strip().split('\n')
+
+executable('kaiju', sources, dependencies: deps)
