@@ -7,6 +7,10 @@ extern "C"
 #include <wayland-server-core.h>
 #include <wlr/backend.h>
 #include <wlr/types/wlr_output.h>
+#include <wlr/types/wlr_gamma_control_v1.h>
+#include <wlr/types/wlr_screencopy_v1.h>
+#include <wlr/types/wlr_primary_selection_v1.h>
+#include <wlr/types/wlr_idle.h>
 #define static
 #include <wlr/render/wlr_renderer.h>
 #undef static
@@ -81,12 +85,24 @@ int main(int argc, char **argv)
     server.new_output.notify = new_output_notify;
     wl_signal_add(&server.backend->events.new_output, &server.new_output);
 
+    const char *socket = wl_display_add_socket_auto(server.wl_display);
+    assert(socket);
+
     if (!wlr_backend_start(server.backend))
     {
         std::cerr << "Failed to start backend\n";
         wl_display_destroy(server.wl_display);
         return 1;
     }
+
+    std::cout << "Running compositor on wayland display " << socket << "\n";
+    setenv("WAYLAND_DISPLAY", socket, true);
+
+    wl_display_init_shm(server.wl_display);
+    wlr_gamma_control_manager_v1_create(server.wl_display);
+    wlr_screencopy_manager_v1_create(server.wl_display);
+    wlr_primary_selection_v1_device_manager_create(server.wl_display);
+    wlr_idle_create(server.wl_display);
 
     wl_display_run(server.wl_display);
     wl_display_destroy(server.wl_display);
