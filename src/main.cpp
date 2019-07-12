@@ -15,11 +15,11 @@ extern "C"
 #include <wlr/render/wlr_renderer.h>
 #undef static
 }
+
 #include "kaiju_server.hpp"
 #include "kaiju_output.hpp"
 
-static void output_destroy_notify(struct wl_listener *listener, void *data)
-{
+static void output_destroy_notify(struct wl_listener *listener, void *data) {
     struct kaiju_output *output = (struct kaiju_output *)wl_container_of(listener, output, destroy);
     wl_list_remove(&output->link);
     wl_list_remove(&output->destroy.link);
@@ -27,8 +27,7 @@ static void output_destroy_notify(struct wl_listener *listener, void *data)
     free(output);
 }
 
-static void output_frame_notify(struct wl_listener *listener, void *data)
-{
+static void output_frame_notify(struct wl_listener *listener, void *data) {
     struct kaiju_output *output = (struct kaiju_output *)wl_container_of(listener, output, frame);
     struct wlr_output *wlr_output = (struct wlr_output *)data;
     struct wlr_renderer *renderer = wlr_backend_get_renderer(
@@ -45,13 +44,11 @@ static void output_frame_notify(struct wl_listener *listener, void *data)
     wlr_renderer_end(renderer);
 }
 
-static void new_output_notify(struct wl_listener *listener, void *data)
-{
+static void new_output_notify(struct wl_listener *listener, void *data) {
     struct kaiju_server *server = wl_container_of(listener, server, new_output);
     struct wlr_output *wlr_output = (struct wlr_output *)data;
 
-    if (!wl_list_empty(&wlr_output->modes))
-    {
+    if (!wl_list_empty(&wlr_output->modes)) {
         struct wlr_output_mode *mode =
             wl_container_of(wlr_output->modes.prev, mode, link);
         wlr_output_set_mode(wlr_output, mode);
@@ -69,8 +66,7 @@ static void new_output_notify(struct wl_listener *listener, void *data)
     wl_signal_add(&wlr_output->events.frame, &output->frame);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     struct kaiju_server server;
 
     server.wl_display = wl_display_create();
@@ -88,8 +84,7 @@ int main(int argc, char **argv)
     const char *socket = wl_display_add_socket_auto(server.wl_display);
     assert(socket);
 
-    if (!wlr_backend_start(server.backend))
-    {
+    if (!wlr_backend_start(server.backend)) {
         std::cerr << "Failed to start backend\n";
         wl_display_destroy(server.wl_display);
         return 1;
