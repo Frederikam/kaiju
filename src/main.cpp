@@ -12,9 +12,7 @@ extern "C" {
 #include <wlr/types/wlr_screencopy_v1.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #define static
-#include <wlr/types/wlr_matrix.h>
 #include <wlr/types/wlr_compositor.h>
-#include <wlr/render/wlr_renderer.h>
 #undef static
 }
 
