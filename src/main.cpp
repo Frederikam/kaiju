@@ -1,23 +1,25 @@
+#include <assert.h>
 #include <iostream>
 #include <stdlib.h>
-#include <assert.h>
-#include <wayland-util.h>
-extern "C"
-{
+extern "C" {
 #include <wayland-server-core.h>
+#include <wayland-util.h>
 #include <wlr/backend.h>
-#include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_gamma_control_v1.h>
-#include <wlr/types/wlr_screencopy_v1.h>
-#include <wlr/types/wlr_primary_selection_v1.h>
 #include <wlr/types/wlr_idle.h>
+#include <wlr/types/wlr_output.h>
+#include <wlr/types/wlr_primary_selection_v1.h>
+#include <wlr/types/wlr_screencopy_v1.h>
+#include <wlr/types/wlr_xdg_shell.h>
 #define static
+#include <wlr/types/wlr_matrix.h>
+#include <wlr/types/wlr_compositor.h>
 #include <wlr/render/wlr_renderer.h>
 #undef static
 }
 
-#include "kaiju_server.hpp"
 #include "kaiju_output.hpp"
+#include "kaiju_server.hpp"
 
 static void output_destroy_notify(struct wl_listener *listener, void *data) {
     struct kaiju_output *output = (struct kaiju_output *)wl_container_of(listener, output, destroy);
@@ -29,9 +31,13 @@ static void output_destroy_notify(struct wl_listener *listener, void *data) {
 
 static void output_frame_notify(struct wl_listener *listener, void *data) {
     struct kaiju_output *output = (struct kaiju_output *)wl_container_of(listener, output, frame);
+    struct kaiju_server *server = output->server;
     struct wlr_output *wlr_output = (struct wlr_output *)data;
     struct wlr_renderer *renderer = wlr_backend_get_renderer(
-        wlr_output->backend);
+            wlr_output->backend);
+
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
 
     wlr_output_attach_render(wlr_output, NULL);
     wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
@@ -39,8 +45,29 @@ static void output_frame_notify(struct wl_listener *listener, void *data) {
     float color[4] = {1.0, 0, 0, 1.0};
     wlr_renderer_clear(renderer, color);
 
+    struct wl_resource *_surface;
+    wl_resource_for_each(_surface, &server->compositor->surface_resources) {
+        struct wlr_surface *surface = wlr_surface_from_resource(_surface);
+
+        if (!wlr_surface_has_buffer(surface)) continue;
+        
+        struct wlr_texture *texture = wlr_surface_get_texture(surface);
+
+        struct wlr_box render_box = {
+                .x = 20,
+                .y = 20,
+                .width = surface->current.width,
+                .height = surface->current.height};
+
+        float matrix[16];
+        wlr_matrix_project_box(matrix, &render_box, surface->current.transform, 0, wlr_output->transform_matrix);
+        wlr_render_texture_with_matrix(renderer, texture, matrix, 1.0f);
+        wlr_surface_send_frame_done(surface, &now);
+    }
+
     //https://github.com/swaywm/wlroots/commit/5e6766a165bd4bc71f1dc24c4348f7be0f020ddd
     //wlr_output_swap_buffers(wlr_output, NULL, NULL);
+    wlr_output_commit(output->wlr_output);
     wlr_renderer_end(renderer);
 }
 
@@ -50,7 +77,7 @@ static void new_output_notify(struct wl_listener *listener, void *data) {
 
     if (!wl_list_empty(&wlr_output->modes)) {
         struct wlr_output_mode *mode =
-            wl_container_of(wlr_output->modes.prev, mode, link);
+                wl_container_of(wlr_output->modes.prev, mode, link);
         wlr_output_set_mode(wlr_output, mode);
     }
 
@@ -98,6 +125,12 @@ int main(int argc, char **argv) {
     wlr_screencopy_manager_v1_create(server.wl_display);
     wlr_primary_selection_v1_device_manager_create(server.wl_display);
     wlr_idle_create(server.wl_display);
+
+    server.compositor = wlr_compositor_create(server.wl_display,
+            wlr_backend_get_renderer(server.backend));
+
+    // Gives a surface a role
+    wlr_xdg_shell_create(server.wl_display);
 
     wl_display_run(server.wl_display);
     wl_display_destroy(server.wl_display);
