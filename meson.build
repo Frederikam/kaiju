@@ -1,11 +1,9 @@
 project('kaiju',
     'c',
-    'cpp', 
-    version: '0.0.1', 
-    default_options: ['cpp_std=c++14']
+    version: '0.0.1'
 )
 
-add_project_arguments(['-DWLR_USE_UNSTABLE'], language: 'cpp')
+add_project_arguments(['-DWLR_USE_UNSTABLE'], language: 'c')
 
 wayland_protocols = dependency('wayland-protocols')
 wayland_client = dependency('wayland-client')

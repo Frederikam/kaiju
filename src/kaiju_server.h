@@ -1,7 +1,6 @@
 #include <wayland-server-core.h>
 
-class kaiju_server {
-    public:
+struct kaiju_server {
     struct wl_display *wl_display;
     struct wl_event_loop *wl_event_loop;
     

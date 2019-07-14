@@ -1,7 +1,7 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <assert.h>
-#include <iostream>
 #include <stdlib.h>
-extern "C" {
 #include <wayland-server-core.h>
 #include <wayland-util.h>
 #include <wlr/backend.h>
@@ -11,14 +11,11 @@ extern "C" {
 #include <wlr/types/wlr_primary_selection_v1.h>
 #include <wlr/types/wlr_screencopy_v1.h>
 #include <wlr/types/wlr_xdg_shell.h>
-#define static
 #include <wlr/types/wlr_compositor.h>
-#undef static
-}
 
-#include "kaiju_output.hpp"
-#include "kaiju_server.hpp"
-#include "output.hpp"
+#include "kaiju_output.h"
+#include "kaiju_server.h"
+#include "output.h"
 
 int main(int argc, char **argv) {
     struct kaiju_server server;
@@ -39,12 +36,12 @@ int main(int argc, char **argv) {
     assert(socket);
 
     if (!wlr_backend_start(server.backend)) {
-        std::cerr << "Failed to start backend\n";
+        fprintf(stdout, "Failed to start backend\n");
         wl_display_destroy(server.wl_display);
         return 1;
     }
 
-    std::cout << "Running compositor on wayland display " << socket << "\n";
+    fprintf(stdout, "Running compositor on wayland display '%s'\n", socket);
     setenv("WAYLAND_DISPLAY", socket, true);
 
     wl_display_init_shm(server.wl_display);
@@ -62,6 +59,6 @@ int main(int argc, char **argv) {
     wl_display_run(server.wl_display);
     wl_display_destroy(server.wl_display);
 
-    std::cout << "\u001B[32mIt runs!\u001B[0m\n";
+    fprintf(stdout, "\x1B[32mIt runs!\x1B[0m\n");
     return 0;
 }

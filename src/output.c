@@ -1,20 +1,17 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
 
-extern "C" {
 #include <wayland-server-core.h>
 #include <wayland-util.h>
 #include <wlr/backend.h>
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_surface.h>
-#define static
 #include <wlr/types/wlr_matrix.h>
 #include <wlr/types/wlr_compositor.h>
 #include <wlr/render/wlr_renderer.h>
-#undef static
-}
 
-#include "kaiju_output.hpp"
-#include "kaiju_server.hpp"
+#include "kaiju_output.h"
+#include "kaiju_server.h"
 
 void output_destroy_notify(struct wl_listener *listener, void *data) {
     struct kaiju_output *output = (struct kaiju_output *)wl_container_of(listener, output, destroy);

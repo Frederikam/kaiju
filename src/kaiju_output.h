@@ -1,9 +1,7 @@
 #include <time.h>
 #include <wayland-util.h>
 
-class kaiju_output
-{
-public:
+struct kaiju_output {
     struct wlr_output *wlr_output;
     struct kaiju_server *server;
     struct timespec last_frame;
