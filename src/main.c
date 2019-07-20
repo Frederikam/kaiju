@@ -16,9 +16,11 @@
 #include "kaiju_output.h"
 #include "kaiju_server.h"
 #include "output.h"
+#include "config_loader.h"
 
 int main(int argc, char **argv) {
     struct kaiju_server server;
+    config_load();
 
     server.wl_display = wl_display_create();
     assert(server.wl_display);

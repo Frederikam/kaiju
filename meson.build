@@ -24,4 +24,5 @@ deps = [
 c = run_command('find_sources.sh')
 sources = c.stdout().strip().split('\n')
 
-executable('kaiju', sources, dependencies: deps)
+# The -ldl flag is required for dlfcn.h
+executable('kaiju', sources, dependencies: deps, link_args: '-ldl')
