@@ -32,4 +32,5 @@ void config_load() {
     fprintf(stdout, "Loaded SO: '%p'\n", handle);
     getSymbols = (libkaiju_bridge_ExportedSymbols* (*)(void))dlsym(handle, "libkaiju_bridge_symbols");
     struct bridge_hooks* hooks = (struct bridge_hooks*) getSymbols()->kotlin.root.com.frederikam.kaiju.kaijuEntry();
+    hooks->onUnload();
 }
