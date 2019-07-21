@@ -1,4 +1,4 @@
-#include "bridge.h" // Hardcoded header
+#include <bridge.h> // Hardcoded header
 #include <bridge_hooks.h>
 #include <assert.h>
 #include <dlfcn.h>

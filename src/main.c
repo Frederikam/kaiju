@@ -13,10 +13,10 @@
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/types/wlr_compositor.h>
 
-#include "kaiju_output.h"
-#include "kaiju_server.h"
-#include "output.h"
-#include "config_loader.h"
+#include <kaiju_output.h>
+#include <kaiju_server.h>
+#include <output.h>
+#include <config_loader.h>
 
 int main(int argc, char **argv) {
     struct kaiju_server server;
