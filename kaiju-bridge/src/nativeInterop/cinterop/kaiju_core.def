@@ -1,2 +1,2 @@
-headers = bridge_hooks.h
+headers = bridge/hooks.h bridge/view.h
 package = kaiju_core

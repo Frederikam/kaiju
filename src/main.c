@@ -15,6 +15,7 @@
 
 #include <kaiju_output.h>
 #include <kaiju_server.h>
+#include <kaiju_view.h>
 #include <output.h>
 #include <config_loader.h>
 
@@ -34,6 +35,14 @@ int main(int argc, char **argv) {
     server.new_output.notify = new_output_notify;
     wl_signal_add(&server.backend->events.new_output, &server.new_output);
 
+    /* Set up our list of views and the xdg-shell.
+	 * https://drewdevault.com/2018/07/29/Wayland-shells.html
+	 */
+	wl_list_init(&server.views);
+	server.xdg_shell = wlr_xdg_shell_create(server.wl_display);
+	server.new_xdg_surface.notify = server_new_xdg_surface;
+	wl_signal_add(&server.xdg_shell->events.new_surface, &server.new_xdg_surface);
+
     const char *socket = wl_display_add_socket_auto(server.wl_display);
     assert(socket);
 
@@ -43,7 +52,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    fprintf(stdout, "Running compositor on wayland display '%s'\n", socket);
+    printf("Running compositor on wayland display '%s'\n", socket);
     setenv("WAYLAND_DISPLAY", socket, true);
 
     wl_display_init_shm(server.wl_display);
@@ -54,9 +63,6 @@ int main(int argc, char **argv) {
 
     server.compositor = wlr_compositor_create(server.wl_display,
             wlr_backend_get_renderer(server.backend));
-
-    // Gives a surface a role
-    wlr_xdg_shell_create(server.wl_display);
 
     wl_display_run(server.wl_display);
     wl_display_destroy(server.wl_display);
