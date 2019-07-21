@@ -37,7 +37,7 @@ typedef struct {
       struct {
         struct {
           struct {
-            void (*kaijuEntry)();
+            void* (*kaijuEntry)();
           } kaiju;
         } frederikam;
       } com;

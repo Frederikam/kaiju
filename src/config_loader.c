@@ -1,4 +1,5 @@
 #include "bridge.h" // Hardcoded header
+#include <bridge_hooks.h>
 #include <assert.h>
 #include <dlfcn.h>
 #include <stdio.h>
@@ -30,5 +31,6 @@ void config_load() {
 
     fprintf(stdout, "Loaded SO: '%p'\n", handle);
     getSymbols = (libkaiju_bridge_ExportedSymbols* (*)(void))dlsym(handle, "libkaiju_bridge_symbols");
-    getSymbols()->kotlin.root.com.frederikam.kaiju.kaijuEntry();
+    struct bridge_hooks* hooks = (struct bridge_hooks*) getSymbols()->kotlin.root.com.frederikam.kaiju.kaijuEntry();
+    hooks->onUnload();
 }

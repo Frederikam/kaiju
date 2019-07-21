@@ -24,5 +24,7 @@ deps = [
 c = run_command('find_sources.sh')
 sources = c.stdout().strip().split('\n')
 
+include = include_directories('include')
+
 # The -ldl flag is required for dlfcn.h
-executable('kaiju', sources, dependencies: deps, link_args: '-ldl')
+executable('kaiju', sources, dependencies: deps, link_args: '-ldl', include_directories: include)
