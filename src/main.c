@@ -19,7 +19,7 @@
 #include <kaiju_view.h>
 #include <output.h>
 #include <config_loader.h>
-#include <kaiju_cursor.h>
+#include <kaiju_input.h>
 
 int main(int argc, char **argv) {
     struct kaiju_server server;

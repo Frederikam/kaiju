@@ -7,18 +7,29 @@ struct kaiju_server {
     struct wl_event_loop *wl_event_loop;
     struct wlr_xdg_shell *xdg_shell;
 
+    // *** Input and cursor lifecycle ***
+    struct wlr_seat *seat;
+    struct wl_listener new_input;
+    struct wl_listener request_cursor;
+    struct wl_list keyboards;
+
+    // *** Cursor ***
     struct wlr_cursor *cursor;
     struct wlr_xcursor_manager *cursor_mgr;
+    struct wl_listener cursor_motion;
+    struct wl_listener cursor_motion_absolute;
+    struct wl_listener cursor_button;
+    struct wl_listener cursor_axis;
+    struct wl_listener cursor_frame;
 
+    // *** Output ***
     /** Responsible for abstracting the IO devices (keyboard, monitors, etc) */
     struct wlr_backend *backend;
     /** Global which clients can add surfaces to */
     struct wlr_compositor *compositor;
-    struct wlr_seat *seat;
-    struct wl_list views;
     struct wl_list outputs; // kaiju_output::link
     struct wlr_output_layout *output_layout;
-
     struct wl_listener new_output;
     struct wl_listener new_xdg_surface;
+    struct wl_list views;
 };
