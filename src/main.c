@@ -52,8 +52,11 @@ int main(int argc, char **argv) {
     const char *socket = wl_display_add_socket_auto(server.wl_display);
     assert(socket);
 
+    configure_input(&server);
+
     if (!wlr_backend_start(server.backend)) {
         fprintf(stdout, "Failed to start backend\n");
+        wlr_backend_destroy(server.backend);
         wl_display_destroy(server.wl_display);
         return 1;
     }
@@ -72,9 +75,9 @@ int main(int argc, char **argv) {
             wlr_backend_get_renderer(server.backend)
     );
     wlr_data_device_manager_create(server.wl_display);
-    configure_input(&server);
 
     wl_display_run(server.wl_display);
+    wl_display_destroy_clients(server.wl_display);
     wl_display_destroy(server.wl_display);
 
     return 0;
