@@ -16,4 +16,5 @@ struct kaiju_view {
 	struct view_props props;
 };
 
+void focus_view(struct kaiju_view *view, struct wlr_surface *surface);
 void server_new_xdg_surface(struct wl_listener *listener, void *data);

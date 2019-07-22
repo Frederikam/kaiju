@@ -5,7 +5,7 @@
 #include <kaiju_server.h>
 #include <kaiju_view.h>
 
-static void focus_view(struct kaiju_view *view, struct wlr_surface *surface) {
+void focus_view(struct kaiju_view *view, struct wlr_surface *surface) {
     /* Note: this function only deals with keyboard focus. */
     if (view == NULL) return;
     printf("Setting focus\n");

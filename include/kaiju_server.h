@@ -1,6 +1,7 @@
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/types/wlr_seat.h>
+#include "kaiju_input.h"
 
 struct kaiju_server {
     struct wl_display *wl_display;
@@ -21,6 +22,13 @@ struct kaiju_server {
     struct wl_listener cursor_button;
     struct wl_listener cursor_axis;
     struct wl_listener cursor_frame;
+
+    // *** Grabbing ***
+    enum kaiju_cursor_mode cursor_mode;
+    struct kaiju_view *grabbed_view;
+    double grab_x, grab_y;
+    int grab_width, grab_height;
+    uint32_t resize_edges;
 
     // *** Output ***
     /** Responsible for abstracting the IO devices (keyboard, monitors, etc) */
