@@ -8,6 +8,7 @@
 #include <wlr/types/wlr_surface.h>
 #include <wlr/types/wlr_matrix.h>
 #include <wlr/types/wlr_compositor.h>
+#include <wlr/types/wlr_output_layout.h>
 #include <wlr/render/wlr_renderer.h>
 
 #include <kaiju_output.h>
@@ -25,8 +26,7 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
     struct kaiju_output *output = (struct kaiju_output *)wl_container_of(listener, output, frame);
     struct kaiju_server *server = output->server;
     struct wlr_output *wlr_output = (struct wlr_output *)data;
-    struct wlr_renderer *renderer = wlr_backend_get_renderer(
-            wlr_output->backend);
+    struct wlr_renderer *renderer = wlr_backend_get_renderer(wlr_output->backend);
 
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
@@ -34,7 +34,7 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
     wlr_output_attach_render(wlr_output, NULL);
     wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
 
-    float color[4] = {1.0, 0, 0, 1.0};
+    float color[4] = {0.2, 0.2, 0.2, 1.0};
     wlr_renderer_clear(renderer, color);
 
     struct wl_resource *_surface;
@@ -57,10 +57,9 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
         wlr_surface_send_frame_done(surface, &now);
     }
 
-    //https://github.com/swaywm/wlroots/commit/5e6766a165bd4bc71f1dc24c4348f7be0f020ddd
-    //wlr_output_swap_buffers(wlr_output, NULL, NULL);
-    wlr_output_commit(output->wlr_output);
+    wlr_output_render_software_cursors(output->wlr_output, NULL);
     wlr_renderer_end(renderer);
+    wlr_output_commit(output->wlr_output);
 }
 
 void new_output_notify(struct wl_listener *listener, void *data) {
@@ -78,6 +77,12 @@ void new_output_notify(struct wl_listener *listener, void *data) {
     output->server = server;
     output->wlr_output = wlr_output;
     wl_list_insert(&server->outputs, &output->link);
+
+    /* Adds this to the output layout. The add_auto function arranges outputs
+	 * from left-to-right in the order they appear. A more sophisticated
+	 * compositor would let the user configure the arrangement of outputs in the
+	 * layout. */
+    wlr_output_layout_add_auto(server->output_layout, wlr_output);
 
     output->destroy.notify = output_destroy_notify;
     wl_signal_add(&wlr_output->events.destroy, &output->destroy);
