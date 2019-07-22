@@ -12,12 +12,14 @@
 #include <wlr/types/wlr_screencopy_v1.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/types/wlr_compositor.h>
+#include <wlr/types/wlr_output_layout.h>
+#include <wlr/types/wlr_data_device.h>
 
 #include <kaiju_output.h>
-#include <kaiju_server.h>
 #include <kaiju_view.h>
 #include <output.h>
 #include <config_loader.h>
+#include <kaiju_cursor.h>
 
 int main(int argc, char **argv) {
     struct kaiju_server server;
@@ -31,6 +33,10 @@ int main(int argc, char **argv) {
     server.backend = wlr_backend_autocreate(server.wl_display, NULL);
     assert(server.backend);
 
+    /* Creates an output layout, which a wlroots utility for working with an
+	 * arrangement of screens in a physical layout. */
+    server.output_layout = wlr_output_layout_create();
+
     wl_list_init(&server.outputs);
     server.new_output.notify = new_output_notify;
     wl_signal_add(&server.backend->events.new_output, &server.new_output);
@@ -38,10 +44,10 @@ int main(int argc, char **argv) {
     /* Set up our list of views and the xdg-shell.
 	 * https://drewdevault.com/2018/07/29/Wayland-shells.html
 	 */
-	wl_list_init(&server.views);
-	server.xdg_shell = wlr_xdg_shell_create(server.wl_display);
-	server.new_xdg_surface.notify = server_new_xdg_surface;
-	wl_signal_add(&server.xdg_shell->events.new_surface, &server.new_xdg_surface);
+    wl_list_init(&server.views);
+    server.xdg_shell = wlr_xdg_shell_create(server.wl_display);
+    server.new_xdg_surface.notify = server_new_xdg_surface;
+    wl_signal_add(&server.xdg_shell->events.new_surface, &server.new_xdg_surface);
 
     const char *socket = wl_display_add_socket_auto(server.wl_display);
     assert(socket);
@@ -52,7 +58,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    printf("Running compositor on wayland display '%s'\n", socket);
+    printf("\x1B[32mRunning compositor on wayland display '%s'\x1B[0m\n", socket);
     setenv("WAYLAND_DISPLAY", socket, true);
 
     wl_display_init_shm(server.wl_display);
@@ -60,13 +66,16 @@ int main(int argc, char **argv) {
     wlr_screencopy_manager_v1_create(server.wl_display);
     wlr_primary_selection_v1_device_manager_create(server.wl_display);
     wlr_idle_create(server.wl_display);
+    configure_cursor(&server);
 
-    server.compositor = wlr_compositor_create(server.wl_display,
-            wlr_backend_get_renderer(server.backend));
+    server.compositor = wlr_compositor_create(
+            server.wl_display,
+            wlr_backend_get_renderer(server.backend)
+    );
+    wlr_data_device_manager_create(server.wl_display);
 
     wl_display_run(server.wl_display);
     wl_display_destroy(server.wl_display);
 
-    fprintf(stdout, "\x1B[32mIt runs!\x1B[0m\n");
     return 0;
 }

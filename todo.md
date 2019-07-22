@@ -1,7 +1,7 @@
 * [x] Rig up the server
 * [x] Add basic surface rendering
 * [x] Get Kotlin interop working
-* [ ] Add output mapping
+* [x] Add output mapping
 * [ ] Render cursor
 * [ ] Notify surfaces of cursor position
 * [ ] Support dragging and resizing
