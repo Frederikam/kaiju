@@ -156,7 +156,7 @@ static bool view_at(struct kaiju_view *view,
     double view_sx = lx - view->props.x;
     double view_sy = ly - view->props.y;
 
-    struct wlr_surface_state *state = &view->xdg_surface->surface->current;
+    //struct wlr_surface_state *state = &view->xdg_surface->surface->current;
 
     double _sx, _sy;
     struct wlr_surface *_surface = NULL;
@@ -322,7 +322,6 @@ static void server_cursor_button(struct wl_listener *listener, void *data) {
     /* Notify the client with pointer focus that a button press has occurred */
     wlr_seat_pointer_notify_button(server->seat, event->time_msec, event->button, event->state);
     double sx, sy;
-    struct wlr_seat *seat = server->seat;
     struct wlr_surface *surface;
     struct kaiju_view *view = desktop_view_at(server,
                                               server->cursor->x, server->cursor->y, &surface, &sx, &sy);
@@ -362,11 +361,44 @@ static void server_cursor_frame(struct wl_listener *listener, void *data) {
 }
 
 
-void configure_cursor(struct kaiju_server *server) {
+void configure_input(struct kaiju_server *server) {
     /*
 	 * Creates a cursor, which is a wlroots utility for tracking the cursor
 	 * image shown on screen.
 	 */
     server->cursor = wlr_cursor_create();
     wlr_cursor_attach_output_layout(server->cursor, server->output_layout);
+
+    /* Creates an xcursor manager, another wlroots utility which loads up
+	 * Xcursor themes to source cursor images from and makes sure that cursor
+	 * images are available at all scale factors on the screen (necessary for
+	 * HiDPI support). We add a cursor theme at scale factor 1 to begin with. */
+    server->cursor_mgr = wlr_xcursor_manager_create(NULL, 24);
+    wlr_xcursor_manager_load(server->cursor_mgr, 1);
+
+    // Add events to cursor
+    // https://drewdevault.com/2018/07/17/Input-handling-in-wlroots.html
+    server->cursor_motion.notify = server_cursor_motion;
+    wl_signal_add(&server->cursor->events.motion, &server->cursor_motion);
+    server->cursor_motion_absolute.notify = server_cursor_motion_absolute;
+    wl_signal_add(&server->cursor->events.motion_absolute, &server->cursor_motion_absolute);
+    server->cursor_button.notify = server_cursor_button;
+    wl_signal_add(&server->cursor->events.button, &server->cursor_button);
+    server->cursor_axis.notify = server_cursor_axis;
+    wl_signal_add(&server->cursor->events.axis, &server->cursor_axis);
+    server->cursor_frame.notify = server_cursor_frame;
+    wl_signal_add(&server->cursor->events.frame, &server->cursor_frame);
+
+    /*
+	 * Configures a seat, which is a single "seat" at which a user sits and
+	 * operates the computer. This conceptually includes up to one keyboard,
+	 * pointer, touch, and drawing tablet device. We also rig up a listener to
+	 * let us know when new input devices are available on the backend.
+	 */
+    wl_list_init(&server->keyboards);
+    server->new_input.notify = server_new_input;
+    wl_signal_add(&server->backend->events.new_input, &server->new_input);
+    server->seat = wlr_seat_create(server->wl_display, "seat0");
+    server->request_cursor.notify = seat_request_cursor;
+    wl_signal_add(&server->seat->events.request_set_cursor, &server->request_cursor);
 }

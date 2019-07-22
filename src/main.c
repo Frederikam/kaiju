@@ -66,13 +66,13 @@ int main(int argc, char **argv) {
     wlr_screencopy_manager_v1_create(server.wl_display);
     wlr_primary_selection_v1_device_manager_create(server.wl_display);
     wlr_idle_create(server.wl_display);
-    configure_cursor(&server);
 
     server.compositor = wlr_compositor_create(
             server.wl_display,
             wlr_backend_get_renderer(server.backend)
     );
     wlr_data_device_manager_create(server.wl_display);
+    configure_input(&server);
 
     wl_display_run(server.wl_display);
     wl_display_destroy(server.wl_display);

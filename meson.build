@@ -14,6 +14,7 @@ deps = [
     dependency('wlroots'),
     dependency('wayland-server'),
     dependency('pixman-1'),
+    dependency('xkbcommon'),
     wayland_protocols,
     wayland_client,
     wlr_protocols,

@@ -1,7 +1,13 @@
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/types/wlr_seat.h>
-#include "kaiju_input.h"
+#include <wlr/backend.h>
+
+enum kaiju_cursor_mode {
+    KAIJU_CURSOR_PASSTHROUGH,
+    KAIJU_CURSOR_MOVE,
+    KAIJU_CURSOR_RESIZE,
+};
 
 struct kaiju_server {
     struct wl_display *wl_display;
