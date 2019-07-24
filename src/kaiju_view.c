@@ -1,6 +1,7 @@
 #include <wayland-util.h>
 #include <wlr/types/wlr_keyboard.h>
 #include <wlr/types/wlr_xdg_shell.h>
+#include <wlr/types/wlr_cursor.h>
 #include <kaiju_output.h>
 #include <kaiju_server.h>
 #include <kaiju_view.h>
@@ -63,27 +64,51 @@ static void xdg_surface_destroy(struct wl_listener *listener, void *data) {
     free(view);
 }
 
+static void begin_interactive(struct kaiju_view *view, enum kaiju_cursor_mode mode, uint32_t edges) {
+    /* This function sets up an interactive move or resize operation, where the
+     * compositor stops propagating pointer events to clients and instead
+     * consumes them itself, to move or resize windows. */
+    struct kaiju_server *server = view->server;
+    struct wlr_surface *focused_surface =
+            server->seat->pointer_state.focused_surface;
+
+    // Deny move/resize requests from unfocused clients.
+    if (view->xdg_surface->surface != focused_surface) return;
+    server->grabbed_view = view;
+    server->cursor_mode = mode;
+    struct wlr_box geo_box;
+    wlr_xdg_surface_get_geometry(view->xdg_surface, &geo_box);
+    if (mode == KAIJU_CURSOR_MOVE) {
+        server->grab_x = server->cursor->x - view->props.x;
+        server->grab_y = server->cursor->y - view->props.x;
+    } else {
+        server->grab_x = server->cursor->x + geo_box.x;
+        server->grab_y = server->cursor->y + geo_box.y;
+    }
+    server->grab_width = geo_box.width;
+    server->grab_height = geo_box.height;
+    server->resize_edges = edges;
+}
+
 static void xdg_toplevel_request_move(struct wl_listener *listener, void *data) {
     /* This event is raised when a client would like to begin an interactive
      * move, typically because the user clicked on their client-side
      * decorations. Note that a more sophisticated compositor should check the
-     * provied serial against a list of button press serials sent to this
+     * provided serial against a list of button press serials sent to this
      * client, to prevent the client from requesting this whenever they want. */
     struct kaiju_view *view = wl_container_of(listener, view, request_move);
-    //begin_interactive(view, TINYWL_CURSOR_MOVE, 0);
-    printf("%s requested move. Ignoring...\n", view->xdg_surface->surface->role->name);
+    begin_interactive(view, KAIJU_CURSOR_MOVE, 0);
 }
 
 static void xdg_toplevel_request_resize(struct wl_listener *listener, void *data) {
     /* This event is raised when a client would like to begin an interactive
      * resize, typically because the user clicked on their client-side
      * decorations. Note that a more sophisticated compositor should check the
-     * provied serial against a list of button press serials sent to this
+     * provided serial against a list of button press serials sent to this
      * client, to prevent the client from requesting this whenever they want. */
-    //struct wlr_xdg_toplevel_resize_event *event = data;
+    struct wlr_xdg_toplevel_resize_event *event = data;
     struct kaiju_view *view = wl_container_of(listener, view, request_resize);
-    //begin_interactive(view, TINYWL_CURSOR_RESIZE, event->edges);
-    printf("%s requested resize. Ignoring...\n", view->xdg_surface->surface->role->name);
+    begin_interactive(view, KAIJU_CURSOR_RESIZE, event->edges);
 }
 
 void server_new_xdg_surface(struct wl_listener *listener, void *data) {
