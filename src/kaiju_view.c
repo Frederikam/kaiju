@@ -80,7 +80,7 @@ static void begin_interactive(struct kaiju_view *view, enum kaiju_cursor_mode mo
     wlr_xdg_surface_get_geometry(view->xdg_surface, &geo_box);
     if (mode == KAIJU_CURSOR_MOVE) {
         server->grab_x = server->cursor->x - view->props.x;
-        server->grab_y = server->cursor->y - view->props.x;
+        server->grab_y = server->cursor->y - view->props.y;
     } else {
         server->grab_x = server->cursor->x + geo_box.x;
         server->grab_y = server->cursor->y + geo_box.y;
