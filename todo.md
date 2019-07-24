@@ -4,7 +4,7 @@
 * [x] Get Kotlin interop working
 * [x] Add output mapping
 * [x] Render cursor
-* [ ] Interactive moving and resizing
+* [x] Interactive moving and resizing
 * [x] Proper surface rendering
 * [x] Notify surfaces of cursor position
 * [x] Add keyboard handling
