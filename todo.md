@@ -5,9 +5,8 @@
 * [x] Add output mapping
 * [x] Render cursor
 * [ ] Interactive moving and resizing
-* [ ] Proper surface rendering
+* [x] Proper surface rendering
 * [x] Notify surfaces of cursor position
-* [ ] Support dragging and resizing
 * [x] Add keyboard handling
 * [ ] Let Kotlin handle compositor keybinds
 * [ ] Get a basic config system set up

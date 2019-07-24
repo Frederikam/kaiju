@@ -41,6 +41,7 @@ struct kaiju_server {
     struct wlr_backend *backend;
     /** Global which clients can add surfaces to */
     struct wlr_compositor *compositor;
+    struct wlr_renderer *renderer;
     struct wl_list outputs; // kaiju_output::link
     struct wlr_output_layout *output_layout;
     struct wl_listener new_output;

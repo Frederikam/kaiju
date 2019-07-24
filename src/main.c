@@ -33,6 +33,9 @@ int main(int argc, char **argv) {
     server.backend = wlr_backend_autocreate(server.wl_display, NULL);
     assert(server.backend);
 
+    server.renderer = wlr_backend_get_renderer(server.backend);
+    wlr_renderer_init_wl_display(server.renderer, server.wl_display);
+
     /* Creates an output layout, which a wlroots utility for working with an
 	 * arrangement of screens in a physical layout. */
     server.output_layout = wlr_output_layout_create();
