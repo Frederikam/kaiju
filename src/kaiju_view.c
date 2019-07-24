@@ -69,8 +69,7 @@ static void begin_interactive(struct kaiju_view *view, enum kaiju_cursor_mode mo
      * compositor stops propagating pointer events to clients and instead
      * consumes them itself, to move or resize windows. */
     struct kaiju_server *server = view->server;
-    struct wlr_surface *focused_surface =
-            server->seat->pointer_state.focused_surface;
+    struct wlr_surface *focused_surface = server->seat->pointer_state.focused_surface;
 
     // Deny move/resize requests from unfocused clients.
     if (view->xdg_surface->surface != focused_surface) return;
@@ -91,21 +90,13 @@ static void begin_interactive(struct kaiju_view *view, enum kaiju_cursor_mode mo
 }
 
 static void xdg_toplevel_request_move(struct wl_listener *listener, void *data) {
-    /* This event is raised when a client would like to begin an interactive
-     * move, typically because the user clicked on their client-side
-     * decorations. Note that a more sophisticated compositor should check the
-     * provided serial against a list of button press serials sent to this
-     * client, to prevent the client from requesting this whenever they want. */
+    // Invoked when a window says it is being dragged by the cursor
     struct kaiju_view *view = wl_container_of(listener, view, request_move);
     begin_interactive(view, KAIJU_CURSOR_MOVE, 0);
 }
 
 static void xdg_toplevel_request_resize(struct wl_listener *listener, void *data) {
-    /* This event is raised when a client would like to begin an interactive
-     * resize, typically because the user clicked on their client-side
-     * decorations. Note that a more sophisticated compositor should check the
-     * provided serial against a list of button press serials sent to this
-     * client, to prevent the client from requesting this whenever they want. */
+    // Invoked when a window says it is being resized by the cursor
     struct wlr_xdg_toplevel_resize_event *event = data;
     struct kaiju_view *view = wl_container_of(listener, view, request_resize);
     begin_interactive(view, KAIJU_CURSOR_RESIZE, event->edges);
