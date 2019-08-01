@@ -4,7 +4,7 @@
 #include <wlr/types/wlr_cursor.h>
 #include <kaiju_output.h>
 #include <kaiju_server.h>
-#include <kaiju_view.h>
+#include <include/shell/kaiju_view.h>
 
 void focus_view(struct kaiju_view *view, struct wlr_surface *surface) {
     /* Note: this function only deals with keyboard focus. */

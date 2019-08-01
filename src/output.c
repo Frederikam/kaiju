@@ -14,7 +14,7 @@
 
 #include <kaiju_output.h>
 #include <kaiju_server.h>
-#include <kaiju_view.h>
+#include <shell/kaiju_view.h>
 
 void output_destroy_notify(struct wl_listener *listener, void *data) {
     struct kaiju_output *output = (struct kaiju_output *) wl_container_of(listener, output, destroy);
