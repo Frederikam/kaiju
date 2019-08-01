@@ -1,3 +1,4 @@
+#pragma once
 #include <stdlib.h>
 #include <wayland-util.h>
 #include <wayland-server-core.h>

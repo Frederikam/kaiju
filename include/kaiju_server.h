@@ -1,3 +1,4 @@
+#pragma once
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/types/wlr_seat.h>

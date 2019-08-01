@@ -1,3 +1,4 @@
+#pragma once
 #include "../include/kaiju_server.h"
 
 struct kaiju_keyboard {

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef KONAN_LIBKAIJU_BRIDGE_H
 #define KONAN_LIBKAIJU_BRIDGE_H
 #ifdef __cplusplus

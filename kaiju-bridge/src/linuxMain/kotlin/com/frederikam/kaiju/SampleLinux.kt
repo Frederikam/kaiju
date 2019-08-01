@@ -6,9 +6,6 @@ import kotlinx.cinterop.*
 @Suppress("unused")
 fun kaijuEntry(): bridge_hooks {
     println("Hello from Kaiju-Bridge")
-    /*return cValue {
-        onUnload = staticCFunction(::onUnload0)
-    }*/
     memScoped {
         val hooks = alloc<bridge_hooks>()
         hooks.onUnload = staticCFunction(::onUnload0)
