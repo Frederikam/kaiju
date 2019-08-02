@@ -1,6 +1,9 @@
 #pragma once
 #ifndef KONAN_LIBKAIJU_BRIDGE_H
 #define KONAN_LIBKAIJU_BRIDGE_H
+
+#include "./include/bridge/hooks.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -38,7 +41,7 @@ typedef struct {
       struct {
         struct {
           struct {
-            void* (*kaijuEntry)();
+              struct bridge_hooks* (*kaijuEntry)();
           } kaiju;
         } frederikam;
       } com;
