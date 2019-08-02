@@ -12,9 +12,9 @@
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/render/wlr_renderer.h>
 
-#include <kaiju_output.h>
-#include <kaiju_server.h>
-#include <shell/kaiju_view.h>
+#include "./include/kaiju_output.h"
+#include "./include/kaiju_server.h"
+#include "./include/shell/kaiju_view.h"
 
 void output_destroy_notify(struct wl_listener *listener, void *data) {
     struct kaiju_output *output = (struct kaiju_output *) wl_container_of(listener, output, destroy);

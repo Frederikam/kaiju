@@ -15,11 +15,11 @@
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_data_device.h>
 
-#include <kaiju_output.h>
-#include <shell/xdg.h>
-#include <output.h>
-#include <config_loader.h>
-#include <kaiju_input.h>
+#include "./kaiju_output.h"
+#include "./shell/xdg.h"
+#include "./output.h"
+#include "./config_loader.h"
+#include "./include/kaiju_input.h"
 
 int main(int argc, char **argv) {
     struct kaiju_server server;

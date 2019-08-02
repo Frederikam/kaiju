@@ -3,8 +3,8 @@
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/util/edges.h>
 #include <wlr/types/wlr_xcursor_manager.h>
-#include <shell/kaiju_view.h>
-#include <kaiju_input.h>
+#include "./shell/kaiju_view.h"
+#include "./kaiju_input.h"
 
 static void keyboard_handle_modifiers(struct wl_listener *listener, void *data) {
     /* This event is raised when a modifier key, such as shift or alt, is

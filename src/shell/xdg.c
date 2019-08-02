@@ -2,8 +2,8 @@
 #include <wlr/types/wlr_keyboard.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/types/wlr_cursor.h>
-#include <kaiju_output.h>
-#include <kaiju_server.h>
+#include "./include/kaiju_output.h"
+#include "./include/kaiju_server.h"
 #include "./include/shell/kaiju_view.h"
 #include "./include/shell/xdg.h"
 

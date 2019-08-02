@@ -1,10 +1,10 @@
-#include <bridge.h> // Hardcoded header
-#include <bridge/hooks.h>
 #include <assert.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "./include/bridge.h" // Hardcoded header
+#include "./include/bridge/hooks.h"
 
 void *handle = NULL;
 libkaiju_bridge_ExportedSymbols* (*getSymbols)(void);

@@ -1,8 +1,8 @@
 #include <wayland-util.h>
 #include <wlr/types/wlr_keyboard.h>
 #include <wlr/types/wlr_xdg_shell.h>
-#include <kaiju_output.h>
-#include <kaiju_server.h>
+#include "./include/kaiju_output.h"
+#include "./include/kaiju_server.h"
 #include "./include/shell/kaiju_view.h"
 
 void focus_view(struct kaiju_view *view, struct wlr_surface *surface) {
